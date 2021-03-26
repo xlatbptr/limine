@@ -9,11 +9,23 @@ global _start
 _start:
     cld
 
-    ; Zero out .bss
-    xor al, al
+    ; zero out .bss
     mov edi, bss_begin
-    mov ecx, bss_end
-    sub ecx, bss_begin
+    
+    ; write in series of DWORDs
+    ; (edx : eax) / ebx
+    mov eax, bss_end
+    sub eax, bss_begin
+    xor edx, edx
+    mov ebx, 4
+    div ebx
+    
+    mov ecx, eax
+    xor eax, eax
+    rep stosd
+    
+    ; write out the remainder bytes
+    mov ecx, edx
     rep stosb
 
     lgdt [gdt]
